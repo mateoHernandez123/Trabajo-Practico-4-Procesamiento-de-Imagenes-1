@@ -1,10 +1,14 @@
-# Documentación — TP Integrador (respuestas y justificaciones)
+# TP 4 — Informe (respuestas y justificaciones)
 
 **Materia:** Procesamiento de Imágenes I  
 **Integrantes:** Mateo Hernandez, Felipe Lucero  
+**Repositorio:** [github.com/mateoHernandez123/Trabajo-Practico-4-Procesamiento-de-Imagenes-1](https://github.com/mateoHernandez123/Trabajo-Practico-4-Procesamiento-de-Imagenes-1)
+
 **Imagen:** `imagenes/imagen_uvas.jpg` — racimo de uvas moradas con follaje verde e iluminación natural.
 
-**Carpetas:** el código lee desde `imagenes/` y escribe todas las figuras y JPG en `resultados/`.
+Vista general del proyecto y galería de figuras: [README.md](../README.md). Instalación y lista de archivos generados: [Readme.md](Readme.md).
+
+**Carpetas:** el script lee desde `imagenes/` y escribe todas las figuras y JPG en `resultados/` (se crea la carpeta si no existe). Si la expansión por entropía se aplica, también se guarda `resultados/comparacion.png`.
 
 ---
 
@@ -12,7 +16,7 @@
 
 Se calcula un histograma de **256 bins** en el rango [0, 255] para cada canal (R, G, B) y también para H, S, V tras la conversión. El histograma describe la frecuencia de cada nivel de intensidad y permite ver si la imagen usa bien el rango dinámico, si hay picos (cielo, hojas, sombras) y si conviene estirar contraste o trabajar en otro espacio de color.
 
-**Salidas:** `resultados/histograma_original.png`, `resultados/histograma_trabajo.png`, `resultados/histograma_hsv.png`.
+**Salidas:** `resultados/histograma_original.png`, `resultados/histograma_trabajo.png`, `resultados/histograma_hsv.png`. Si hay expansión: además `resultados/comparacion.png`.
 
 ---
 
@@ -48,7 +52,7 @@ La **moda en B en 0** refleja píxeles muy oscuros o dominancia de azul bajo en 
 
 ## 4. Entropía y expansión de histograma
 
-**Criterio implementado:** si algún canal tiene entropía **estrictamente menor** a un umbral (`7.0`, configurable), se aplica **expansión lineal** por canal usando los percentiles **P2** y **P98** como rango a mapear a [0, 255] (recorte con `clip`).
+**Criterio implementado:** si algún canal tiene entropía **estrictamente menor** al umbral `ENTROPY_THRESHOLD` (**7.0** en el código), se aplica **expansión lineal** por canal usando los percentiles **P2** y **P98** como rango a mapear a [0, 255] (recorte con `clip`). Si se aplica expansión, el script guarda además `resultados/comparacion.png` (lado a lado original vs expandida e histogramas).
 
 En esta imagen, los tres canales superan el umbral (entropías ~7.56–7.90), es decir, la distribución ya es bastante “llena” en términos de niveles utilizados. Por tanto la decisión del programa es **no aplicar expansión**, para no amplificar ruido sin un beneficio claro de contraste global.
 
@@ -85,7 +89,9 @@ Sí, de forma **moderada**:
 5. **`binary_fill_holes`:** rellena agujeros rodeados por el racimo (efecto “queso gruyere” por sombras que antes quedaban fuera del umbral).
 6. **Cierre final** suave para consolidar el borde.
 
-**Referencia adicional:** se calcula el umbral de **Otsu** sobre la **luminancia** (gris ITU-R BT.601) y se muestra en consola y en el panel de texto de `resultados/segmentacion_resumen.png` (en una corrida típica, **T ≈ 117**). Otsu global no está optimizado para separar “uvas vs hojas” cuando ambas clases no forman un histograma bimodal limpio; por eso el pipeline de entrega usa **color + mayor componente** como decisión principal, coherente con la consigna que permite trabajar en color.
+**Referencia adicional:** se calcula el umbral de **Otsu** sobre la **luminancia** (misma transformación que `rgb_to_gray` en el código: pesos BT.601 0.299R + 0.587G + 0.114B) y se muestra en consola y en el panel de texto de `resultados/segmentacion_resumen.png` (en una corrida típica, **T ≈ 117**). Otsu global no está optimizado para separar “uvas vs hojas” cuando ambas clases no forman un histograma bimodal limpio; por eso el pipeline usa **color + mayor componente** como decisión principal, coherente con la consigna que permite trabajar en color.
+
+El panel `segmentacion_resumen.png` usa como primera subfigura la imagen **ya filtrada** (mediana + unsharp), que es la que se convierte a HSV para armar la máscara.
 
 **Salidas:** `resultados/segmentacion_resumen.png`, `resultados/objeto_extraido.jpg`.
 

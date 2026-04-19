@@ -2,7 +2,7 @@
 
 **Materia:** Procesamiento de Imágenes I  
 **Integrantes:** Mateo Hernandez, Felipe Lucero  
-**Repositorio sugerido en GitHub:** `Trabajo-Practico-4-Procesamiento-de-Imagenes-1`
+**Repositorio en GitHub:** [github.com/mateoHernandez123/Trabajo-Practico-4-Procesamiento-de-Imagenes-1](https://github.com/mateoHernandez123/Trabajo-Practico-4-Procesamiento-de-Imagenes-1)
 
 Este trabajo implementa un pipeline en Python: histograma y rango dinámico, estadísticos (media, desvío, moda, entropía), decisión de expansión de histograma según entropía, preprocesamiento y filtros, segmentación del racimo principal en HSV con morfología y relleno de huecos, y visualización en **falso color**.
 
@@ -15,8 +15,10 @@ pip install -r requirements.txt
 python tp_integrador.py
 ```
 
-Instrucciones detalladas (venv, Windows/Linux): [docs/Readme.md](docs/Readme.md).  
+Instrucciones detalladas (venv, Windows/Linux, Git Bash): [docs/Readme.md](docs/Readme.md).  
 Respuestas y justificaciones de la consigna: [docs/doc.md](docs/doc.md).
+
+La carpeta `resultados/` se crea al ejecutar el script si no existe. La imagen de entrada debe estar en `imagenes/imagen_uvas.jpg` (ver [docs/Readme.md](docs/Readme.md) para usar otra ruta).
 
 ---
 
@@ -90,7 +92,7 @@ Escena elegida para aplicar todos los conceptos: racimo de uvas con follaje e il
 
 ![Máscara, extracción, resaltado, falso color y nota Otsu](resultados/segmentacion_resumen.png)
 
-**Qué es:** panel con imagen filtrada, **máscara binaria** (mayor componente conexa), objeto sobre negro, resaltado con fondo atenuado, **falso color inferno** y valor de **Otsu** en luminancia como referencia.  
+**Qué es:** panel con la imagen **tras mediana 3×3 y unsharp mask** (misma etapa que alimenta la conversión HSV), **máscara binaria** (mayor componente conexa), objeto sobre negro, resaltado con fondo atenuado (factor 0.35 fuera de la máscara), **falso color inferno** y valor de **Otsu** en luminancia (BT.601) como referencia.  
 **Qué justifica:** umbralización por color + morfología (**cierre**, apertura leve) + **relleno de huecos** (`binary_fill_holes`) para incluir sombras internas del racimo; Otsu documenta un umbral global clásico aunque el método principal sea HSV.
 
 ---
@@ -115,37 +117,24 @@ Escena elegida para aplicar todos los conceptos: racimo de uvas con follaje e il
 
 ## Estructura del proyecto
 
-| Ruta | Contenido |
-|------|-----------|
-| `tp_integrador.py` | Código del pipeline |
-| `requirements.txt` | Dependencias |
-| `imagenes/imagen_uvas.jpg` | Entrada |
-| `resultados/` | Figuras y JPG generados al ejecutar el script |
-| `docs/Readme.md` | Instalación y ejecución |
-| `docs/doc.md` | Informe / respuestas a la consigna |
+| Ruta                       | Contenido                                                                 |
+| -------------------------- | ------------------------------------------------------------------------- |
+| `README.md`                | Este archivo: resumen, figuras y estructura                             |
+| `tp_integrador.py`         | Pipeline único: histogramas, estadísticos, expansión opcional, filtros, HSV, segmentación, falso color |
+| `requirements.txt`         | Dependencias (`numpy`, `matplotlib`, `Pillow`, `scipy`)                   |
+| `imagenes/`                | Carpeta de entrada; por defecto `imagen_uvas.jpg`                         |
+| `resultados/`              | PNG y JPG generados al ejecutar (incluye `comparacion.png` solo si aplica expansión por entropía) |
+| `docs/Readme.md`           | Instalación, entorno virtual y salidas de `resultados/`                   |
+| `docs/doc.md`              | Informe / respuestas a la consigna                                        |
+| `.gitignore`               | Excluye `venv/`, cachés de Python e ignorados de IDE                      |
+
+Parámetros útiles en código: `IMAGE_PATH`, `ENTROPY_THRESHOLD`, umbrales `H_MIN`–`H_MAX`, `S_MIN`, `V_MIN`–`V_MAX` en `tp_integrador.py`.
 
 ---
 
-## Subir a GitHub (crear el repo `Trabajo-Practico-4-Procesamiento-de-Imagenes-1`)
-
-1. En GitHub: **New repository** → nombre `Trabajo-Practico-4-Procesamiento-de-Imagenes-1` → sin README si ya tenés uno local.
-2. En la carpeta del proyecto (ya renombrada si seguiste el paso de carpeta):
+## Clonar o actualizar desde GitHub
 
 ```bash
-git init
-git add .
-git commit -m "TP4: pipeline de procesamiento de imagenes (uvas)"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/Trabajo-Practico-4-Procesamiento-de-Imagenes-1.git
-git push -u origin main
+git clone git@github.com:mateoHernandez123/Trabajo-Practico-4-Procesamiento-de-Imagenes-1.git
+cd Trabajo-Practico-4-Procesamiento-de-Imagenes-1
 ```
-
-Si usás **GitHub CLI** (`gh`) autenticado:
-
-```bash
-gh repo create Trabajo-Practico-4-Procesamiento-de-Imagenes-1 --private --source=. --remote=origin --push
-```
-
-*(Ajustá `--public` o `--private` según la cátedra.)*
-
-**Nota:** las imágenes de `resultados/` deben estar **commiteadas** para que se vean en el README en GitHub; si no las subís, los enlaces `![](resultados/...)` quedarán rotos hasta volver a generarlas y hacer push.
